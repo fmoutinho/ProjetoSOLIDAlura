@@ -5,31 +5,31 @@ using Alura.LeilaoOnline.WebApp.Models;
 using System;
 using Alura.LeilaoOnline.WebApp.Dados.EFCore;
 using Alura.LeilaoOnline.WebApp.Dados.Interfaces;
+using Alura.LeilaoOnline.WebApp.Services.Interfaces;
 
 namespace Alura.LeilaoOnline.WebApp.Controllers
 {
     public class LeilaoController : Controller
     {
 
-        ILeilaoDao _leilaoDao;
-        ICategoriaDao _categoriaDao;
+        IAdminService _service;
+        IProdutoService _produtoService;
 
-        public LeilaoController(ILeilaoDao leilaoDao, ICategoriaDao categoriaDao)
+        public LeilaoController(IAdminService service)
         {
-            _leilaoDao = leilaoDao;
-            _categoriaDao = categoriaDao;
+            _service = service;
         }
 
         public IActionResult Index()
         {
-            var leiloes = _leilaoDao.GetAllWithCategoria();
+            var leiloes = _service.ConsultaLeiloes();
             return View(leiloes);
         }
 
         [HttpGet]
         public IActionResult Insert()
         {
-            ViewData["Categorias"] = _categoriaDao.GetAll();
+            ViewData["Categorias"] = _service.ConsultaCategorias();
             ViewData["Operacao"] = "Inclusão";
             return View("Form");
         }
@@ -39,10 +39,10 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _leilaoDao.Insert(model);
+                _service.CadastraLeilao(model);
                 return RedirectToAction("Index");
             }
-            ViewData["Categorias"] = _categoriaDao.GetAll();
+            ViewData["Categorias"] = _service.ConsultaCategorias();
             ViewData["Operacao"] = "Inclusão";
             return View("Form", model);
         }
@@ -50,9 +50,9 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            ViewData["Categorias"] = _categoriaDao.GetAll();
+            ViewData["Categorias"] = _service.ConsultaCategorias();
             ViewData["Operacao"] = "Edição";
-            var leilao = _leilaoDao.GetByID(id);
+            var leilao = _service.ConsultaLeilaoPorId(id);
             if (leilao == null) return NotFound();
             return View("Form", leilao);
         }
@@ -62,10 +62,10 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _leilaoDao.Update(model);
+                _service.ModificaLeilao(model);
                 return RedirectToAction("Index");
             }
-            ViewData["Categorias"] = _categoriaDao.GetAll();
+            ViewData["Categorias"] = _service.ConsultaCategorias();
             ViewData["Operacao"] = "Edição";
             return View("Form", model);
         }
@@ -73,34 +73,30 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
         [HttpPost]
         public IActionResult Inicia(int id)
         {
-            var leilao = _leilaoDao.GetByID(id);
+            var leilao = _service.ConsultaLeilaoPorId(id);
             if (leilao == null) return NotFound();
             if (leilao.Situacao != SituacaoLeilao.Rascunho) return StatusCode(405);
-            leilao.Situacao = SituacaoLeilao.Pregao;
-            leilao.Inicio = DateTime.Now;
-            _leilaoDao.Update(leilao);
+            _service.IniciaPregaoDoLeilaoComId(id);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult Finaliza(int id)
         {
-            var leilao = _leilaoDao.GetByID(id);
+            var leilao = _service.ConsultaLeilaoPorId(id);
             if (leilao == null) return NotFound();
             if (leilao.Situacao != SituacaoLeilao.Pregao) return StatusCode(405);
-            leilao.Situacao = SituacaoLeilao.Finalizado;
-            leilao.Termino = DateTime.Now;
-            _leilaoDao.Update(leilao);
+            _service.FinalizaPregaoDoLeilaoComId(id);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult Remove(int id)
         {
-            var leilao = _leilaoDao.GetByID(id);
+            var leilao = _service.ConsultaLeilaoPorId(id);
             if (leilao == null) return NotFound();
             if (leilao.Situacao == SituacaoLeilao.Pregao) return StatusCode(405);
-            _leilaoDao.Delete(leilao);
+            _service.RemoveLeilao(leilao);
             return NoContent();
         }
 
@@ -108,7 +104,7 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
         public IActionResult Pesquisa(string termo)
         {
             ViewData["termo"] = termo;
-            var leiloes = _leilaoDao.GetAllWithCategoria()
+            var leiloes = _service.ConsultaLeiloes()
                 .Where(l => string.IsNullOrWhiteSpace(termo) ||
                     l.Titulo.ToUpper().Contains(termo.ToUpper()) ||
                     l.Descricao.ToUpper().Contains(termo.ToUpper()) ||

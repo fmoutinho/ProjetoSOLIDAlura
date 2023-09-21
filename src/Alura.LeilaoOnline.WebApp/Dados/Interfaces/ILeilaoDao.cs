@@ -5,10 +5,10 @@ namespace Alura.LeilaoOnline.WebApp.Dados.Interfaces
 {
     public interface ILeilaoDao
     {
-        public IEnumerable<Leilao> GetAllWithCategoria();
-        public void Insert(Leilao leilao);
-        public void Update(Leilao leilao);
-        public void Delete(Leilao leilao);
-        public Leilao GetByID(int id);
+        IEnumerable<Leilao> BuscaTodosOsLeiloes();
+        void Insert(Leilao leilao);
+        void Update(Leilao leilao);
+        void Delete(Leilao leilao);
+        Leilao GetByID(int id);
     }
 }

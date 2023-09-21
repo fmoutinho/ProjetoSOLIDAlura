@@ -1,7 +1,8 @@
-﻿using Alura.LeilaoOnline.WebApp.Dados.Interfaces;
-using Alura.LeilaoOnline.WebApp.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Alura.LeilaoOnline.WebApp.Models;
+using Alura.LeilaoOnline.WebApp.Dados.Interfaces;
 
 namespace Alura.LeilaoOnline.WebApp.Dados.EFCore
 {
@@ -13,9 +14,18 @@ namespace Alura.LeilaoOnline.WebApp.Dados.EFCore
         {
             _context = new AppDbContext();
         }
-        public IEnumerable<Categoria> GetAll()
+
+        public Categoria ConsultaCategoriaPorId(int id)
         {
-            return _context.Categorias.ToList();
+            return _context.Categorias
+                .Include(c => c.Leiloes)
+                .First(c => c.Id == id);
+        }
+
+        public IEnumerable<Categoria> ConsultaCategorias()
+        {
+            return _context.Categorias
+                .Include(c => c.Leiloes);
         }
     }
 }
