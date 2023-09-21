@@ -10,19 +10,19 @@ namespace Alura.LeilaoOnline.WebApp.Dados.EFCore
     {
         AppDbContext _context;
 
-        public CategoriaDaoEFCore()
+        public CategoriaDaoEFCore(AppDbContext context)
         {
-            _context = new AppDbContext();
+            _context = context;
         }
 
-        public Categoria ConsultaCategoriaPorId(int id)
+        public Categoria GetById(int id)
         {
             return _context.Categorias
                 .Include(c => c.Leiloes)
                 .First(c => c.Id == id);
         }
 
-        public IEnumerable<Categoria> ConsultaCategorias()
+        public IEnumerable<Categoria> GetAll()
         {
             return _context.Categorias
                 .Include(c => c.Leiloes);

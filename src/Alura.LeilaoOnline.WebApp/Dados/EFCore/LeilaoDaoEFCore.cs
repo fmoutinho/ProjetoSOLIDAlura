@@ -13,23 +13,23 @@ namespace Alura.LeilaoOnline.WebApp.Dados.EFCore
         {
             _context = context;
         }
-        public IEnumerable<Leilao> BuscaTodosOsLeiloes() => _context.Leiloes.Include(l => l.Categoria);
-        public Leilao GetByID(int id) => _context.Leiloes.Find(id);
-        public void Insert(Leilao leilao)
+        public IEnumerable<Leilao> GetAll() => _context.Leiloes.Include(l => l.Categoria);
+        public Leilao GetById(int id) => _context.Leiloes.Find(id);
+        public void Insert(Leilao entity)
         {
-            _context.Leiloes.Add(leilao);
+            _context.Leiloes.Add(entity);
             _context.SaveChanges();
         }
 
-        public void Update(Leilao leilao)
+        public void Update(Leilao entity)
         {
-            _context.Leiloes.Update(leilao);
+            _context.Leiloes.Update(entity);
             _context.SaveChanges();
         }
 
-        public void Delete(Leilao leilao)
+        public void Delete(Leilao entity)
         {
-            _context.Leiloes.Remove(leilao);
+            _context.Leiloes.Remove(entity);
             _context.SaveChanges();
         }
     }

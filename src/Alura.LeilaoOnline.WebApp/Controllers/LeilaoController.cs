@@ -11,9 +11,7 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
 {
     public class LeilaoController : Controller
     {
-
         IAdminService _service;
-        IProdutoService _produtoService;
 
         public LeilaoController(IAdminService service)
         {

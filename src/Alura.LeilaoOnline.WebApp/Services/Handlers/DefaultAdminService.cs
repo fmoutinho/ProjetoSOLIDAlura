@@ -25,17 +25,17 @@ namespace Alura.LeilaoOnline.WebApp.Services.Handlers
 
         public IEnumerable<Categoria> ConsultaCategorias()
         {
-            return _categoriaDao.ConsultaCategorias();
+            return _categoriaDao.GetAll();
         }
 
         public Leilao ConsultaLeilaoPorId(int id)
         {
-            return _leilaoDao.GetByID(id);
+            return _leilaoDao.GetById(id);
         }
 
         public IEnumerable<Leilao> ConsultaLeiloes()
         {
-            return _leilaoDao.BuscaTodosOsLeiloes();
+            return _leilaoDao.GetAll();
         }
 
         public void FinalizaPregaoDoLeilaoComId(int id)
